@@ -11,6 +11,10 @@ import (
 	"github.com/go-chi/cors"
 )
 
+const (
+	RESUME_PATH = "./resume-latest.pdf"
+)
+
 func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
@@ -20,6 +24,16 @@ func main() {
 	}))
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Health ok! Welcome to the API!")
+	})
+
+	r.Get("/resume", func(w http.ResponseWriter, r *http.Request) {
+		resumeFile, err := os.ReadFile(RESUME_PATH)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		w.Header().Add("Content-Type", "application/pdf")
+		w.Write(resumeFile)
 	})
 
 	appMode := os.Getenv("GO_ENV")
