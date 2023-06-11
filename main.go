@@ -6,13 +6,10 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/RichDom2185/2023-website-backend/handlers"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
-)
-
-const (
-	RESUME_PATH = "./resume-latest.pdf"
 )
 
 func main() {
@@ -22,19 +19,8 @@ func main() {
 		AllowedOrigins: []string{"https://*", "http://*"},
 		AllowedMethods: []string{"GET", "POST", "OPTIONS"},
 	}))
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Health ok! Welcome to the API!")
-	})
-
-	r.Get("/resume", func(w http.ResponseWriter, r *http.Request) {
-		resumeFile, err := os.ReadFile(RESUME_PATH)
-		if err != nil {
-			log.Fatalln(err)
-		}
-
-		w.Header().Add("Content-Type", "application/pdf")
-		w.Write(resumeFile)
-	})
+	r.Get("/", handlers.HandleHealthCheck)
+	r.Get("/resume", handlers.HandleResumeForm)
 
 	appMode := os.Getenv("GO_ENV")
 	if appMode == "" {
