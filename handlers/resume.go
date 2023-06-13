@@ -31,10 +31,10 @@ func HandleResumeForm(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln(err)
 	}
 
+	// TODO: Re-enable IP check
 	var captchaParams params.VerifyCaptchaRequest = params.VerifyCaptchaRequest{
 		Secret:   os.Getenv(HCAPTCHA_SECRET_KEY),
 		Response: requestParams.Token,
-		RemoteIP: r.RemoteAddr,
 		SiteKey:  os.Getenv(HCAPTCHA_SITEKEY_KEY),
 	}
 	values, err := query.Values(captchaParams)
