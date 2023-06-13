@@ -23,7 +23,7 @@ func main() {
 		AllowedMethods: []string{"GET", "POST", "OPTIONS"},
 	}))
 	r.Get("/", handlers.HandleHealthCheck)
-	r.Get("/resume", handlers.HandleResumeForm)
+	r.Post("/resume", handlers.HandleResumeForm)
 
 	appMode := os.Getenv("GO_ENV")
 	if appMode == "" {
