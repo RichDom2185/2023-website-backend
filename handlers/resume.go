@@ -1,15 +1,16 @@
 package handlers
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/RichDom2185/2023-website-backend/params"
+	"github.com/google/go-querystring/query"
 )
 
 const (
@@ -36,12 +37,12 @@ func HandleResumeForm(w http.ResponseWriter, r *http.Request) {
 		RemoteIP: r.RemoteAddr,
 		SiteKey:  os.Getenv(HCAPTCHA_SITEKEY_KEY),
 	}
-	asJSON, err := json.Marshal(captchaParams)
+	values, err := query.Values(captchaParams)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	resp, err := http.Post(HCAPTCHA_VERIFICATION_URL, HCAPTCHA_VERIFICATION_CONTENT_TYPE, bytes.NewBuffer(asJSON))
+	resp, err := http.Post(HCAPTCHA_VERIFICATION_URL, HCAPTCHA_VERIFICATION_CONTENT_TYPE, strings.NewReader(values.Encode()))
 	if err != nil {
 		log.Fatalln(err)
 	}

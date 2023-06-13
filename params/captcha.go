@@ -1,10 +1,10 @@
 package params
 
 type VerifyCaptchaRequest struct {
-	Secret   string `json:"secret"`
-	Response string `json:"response"`
-	RemoteIP string `json:"remoteip"`
-	SiteKey  string `json:"sitekey"`
+	Secret   string `url:"secret"`
+	Response string `url:"response"`
+	RemoteIP string `url:"remoteip"`
+	SiteKey  string `url:"sitekey"`
 }
 
 type VerifyCaptchaResponse struct {
