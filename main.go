@@ -1,11 +1,14 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 
+	"github.com/RichDom2185/2023-website-backend/bot"
 	"github.com/RichDom2185/2023-website-backend/router"
 	"github.com/joho/godotenv"
 )
@@ -16,7 +19,20 @@ func main() {
 		log.Fatalln("Error loading .env file:", err)
 	}
 
-	r := router.Setup()
+	botToken, ok := os.LookupEnv("TG_BOT_TOKEN")
+	if !ok {
+		log.Fatalln("TG_BOT_TOKEN not found in environment.")
+	}
+
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer cancel()
+
+	b, err := bot.Setup(ctx, botToken)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	r := router.Setup(bot.MakeMiddlewareFrom(b))
 
 	appMode := os.Getenv("GO_ENV")
 	if appMode == "" {
