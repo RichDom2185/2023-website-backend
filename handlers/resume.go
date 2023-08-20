@@ -64,5 +64,8 @@ func HandleResumeForm(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln(err)
 	}
 	w.Header().Add("Content-Type", "application/pdf")
-	w.Write(resumeFile)
+	_, err = w.Write(resumeFile)
+	if err != nil {
+		log.Fatalln(err)
+	}
 }

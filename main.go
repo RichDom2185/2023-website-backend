@@ -11,7 +11,10 @@ import (
 )
 
 func main() {
-	godotenv.Load()
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalln("Error loading .env file:", err)
+	}
 
 	r := router.Setup()
 
@@ -26,7 +29,7 @@ func main() {
 		host = "127.0.0.1"
 	}
 
-	err := http.ListenAndServe(host+":4000", r)
+	err = http.ListenAndServe(host+":4000", r)
 	if err != nil {
 		log.Fatalln(err)
 	}
