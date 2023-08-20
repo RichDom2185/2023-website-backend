@@ -14,8 +14,12 @@ func Setup() chi.Router {
 		AllowedOrigins: []string{"https://*", "http://*"},
 		AllowedMethods: []string{"GET", "POST", "OPTIONS"},
 	}))
+
+	setupRoutes(r)
+	return r
+}
+
+func setupRoutes(r chi.Router) {
 	r.Get("/", handlers.HandleHealthCheck)
 	r.Post("/resume", handlers.HandleResumeForm)
-
-	return r
 }
