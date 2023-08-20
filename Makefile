@@ -1,4 +1,4 @@
-.PHONY: dev build
+.PHONY: dev build lint
 
 dev:
 	@echo "Starting development server..."
@@ -6,3 +6,5 @@ dev:
 build:
 	@echo "Building binary..."
 	@go build -o app main.go
+lint:
+	@golangci-lint run
