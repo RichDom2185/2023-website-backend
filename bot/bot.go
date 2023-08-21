@@ -12,6 +12,5 @@ func Setup(ctx context.Context, token string) (*bot.Bot, error) {
 		return nil, err
 	}
 
-	b.Start(ctx)
 	return b, nil
 }

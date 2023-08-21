@@ -2,14 +2,15 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"time"
 
 	"github.com/RichDom2185/2023-website-backend/bot"
 	"github.com/RichDom2185/2023-website-backend/router"
+	"github.com/RichDom2185/2023-website-backend/server"
 	"github.com/joho/godotenv"
 )
 
@@ -24,29 +25,57 @@ func main() {
 		log.Fatalln("TG_BOT_TOKEN not found in environment.")
 	}
 
+	// Set up shared context
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 
+	// Set up bot
 	b, err := bot.Setup(ctx, botToken)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
+	// Start bot
+	log.Println("Starting bot")
+	go func() {
+		defer log.Println("Bot stopped.")
+		b.Start(ctx)
+	}()
+
+	// Set up router
 	r := router.Setup(bot.MakeMiddlewareFrom(b))
 
 	appMode := os.Getenv("GO_ENV")
 	if appMode == "" {
 		appMode = "production"
 	}
-	fmt.Printf("Server started in %s mode!\n", appMode)
 
 	host := ""
 	if appMode == "development" {
 		host = "127.0.0.1"
 	}
 
-	err = http.ListenAndServe(host+":4000", r)
-	if err != nil {
-		log.Fatalln(err)
+	s := &server.Server{
+		Server: &http.Server{
+			Addr:    host + ":4000",
+			Handler: r,
+		},
 	}
+
+	// Start API server
+	log.Printf("Starting server in %s mode\n", appMode)
+	go func() {
+		err = s.ListenAndServe()
+		if err != nil {
+			log.Fatalf("Unexpected error from ListenAndServe: %v\n", err)
+		}
+	}()
+	go s.WaitForExitingSignal(ctx)
+
+	// Wait for the interrupt signal to gracefully shut down
+	<-ctx.Done()
+
+	// Allow the goroutines to exit gracefully
+	time.Sleep(2 * time.Second)
+	log.Println("Exiting app")
 }
