@@ -17,7 +17,8 @@ import (
 func main() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatalln("Error loading .env file:", err)
+		log.Println("Cannot find .env file, skipping...", err)
+		err = nil
 	}
 
 	botToken, ok := os.LookupEnv("TG_BOT_TOKEN")
@@ -79,3 +80,15 @@ func main() {
 	time.Sleep(2 * time.Second)
 	log.Println("Exiting app")
 }
+
+// func runConcurrently(items ...func()) {
+// 	wg := &sync.WaitGroup{}
+// 	wg.Add(len(items))
+// 	for _, item := range items {
+// 		go func(f func()) {
+// 			defer wg.Done()
+// 			f()
+// 		}(item)
+// 	}
+// 	wg.Wait()
+// }
