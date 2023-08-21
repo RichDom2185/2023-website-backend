@@ -28,4 +28,5 @@ func Setup(customMiddleware ...func(http.Handler) http.Handler) chi.Router {
 func setupRoutes(r chi.Router) {
 	r.Get("/", handlers.HandleHealthCheck)
 	r.Post("/resume", handlers.HandleResumeForm)
+	r.Post("/message", handlers.HandleMessages)
 }
